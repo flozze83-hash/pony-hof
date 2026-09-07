@@ -259,7 +259,7 @@ var GREETINGS = function () { return ['Hallo', 'Schön, dass du da bist', 'Willk
 var PRAISE = ['Super', 'Klasse', 'Toll', 'Prima', 'Stark', 'Weiter so', 'Richtig', 'Genau', 'Wunderbar', 'Spitze', 'Ganz genau', 'Das stimmt', 'Sehr gut'];
 
 var DEF_USER = { childName: '', gender: null, companionType: null, companionName: '', stars: 0, farmLevel: 1, streak: 0, adaptiveMax: 10, sessionLocked: false, lastPlayed: null };
-var DEF_SETTINGS = { sessionLimitMinutes: 15, maxNumber: 10, pin: '1234', ttsEnabled: true, ttsRate: 0.85, sfxEnabled: false, showNumberLine: true, focusMode: false };
+var DEF_SETTINGS = { sessionLimitMinutes: 15, maxNumber: 10, pin: '1234', ttsEnabled: true, ttsRate: 0.85, sfxEnabled: false, showNumberLine: true, focusMode: false, voiceName: '', ttsPitch: 1.05 };
 var DEF_STATS = { errors: [], sessions: [], playtimeTotal: 0, successRates: {}, crossTen: { correct: 0, total: 0 }, daily: {}, leaves: 0, leaveLog: [] };
 
 /* ================= Speicher ================= */
@@ -288,6 +288,8 @@ if ([10, 20].indexOf(settings.maxNumber) < 0) settings.maxNumber = 10;
 if (!settings.pin) settings.pin = '1234';
 if (typeof settings.showNumberLine !== 'boolean') settings.showNumberLine = true;
 if (typeof settings.focusMode !== 'boolean') settings.focusMode = false;
+if (typeof settings.voiceName !== 'string') settings.voiceName = '';
+if (typeof settings.ttsPitch !== 'number') settings.ttsPitch = 1.05;
 
 function saveUser() { save('ponyhof_user', user); }
 function saveSettings() { save('ponyhof_settings', settings); }
@@ -336,18 +338,34 @@ function on(sel, ev, fn) { var els = APP.querySelectorAll(sel); for (var i = 0; 
 /* ================= Sprachausgabe & Ton ================= */
 var TTS = {
   voice: null, ok: ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window),
+  list: function () {
+    if (!this.ok) return [];
+    try { return window.speechSynthesis.getVoices() || []; } catch (e) { return []; }
+  },
+  german: function () { return this.list().filter(function (v) { return /^de/i.test(v.lang); }); },
+  choose: function () {
+    var vs = this.list(), de = this.german();
+    if (settings.voiceName) {
+      var sel = vs.filter(function (v) { return v.name === settings.voiceName; })[0];
+      if (sel) { this.voice = sel; return; }
+    }
+    this.voice = de.filter(function (v) { return /google/i.test(v.name); })[0]
+      || de.filter(function (v) { return !/network|netzwerk/i.test(v.name); })[0]
+      || de[0] || null;
+  },
   init: function () {
     if (!this.ok) return;
     var self = this;
-    var choose = function () {
-      try {
-        var vs = window.speechSynthesis.getVoices() || [];
-        self.voice = vs.filter(function (v) { return /^de/i.test(v.lang) && /google/i.test(v.name); })[0]
-          || vs.filter(function (v) { return /^de/i.test(v.lang); })[0] || null;
-      } catch (e) {}
-    };
-    choose();
-    try { window.speechSynthesis.onvoiceschanged = choose; } catch (e) {}
+    self.choose();
+    try {
+      window.speechSynthesis.onvoiceschanged = function () {
+        self.choose();
+        if (S.screen === 'parents' && S.parentsUnlocked) {
+          var sel = document.getElementById('voice');
+          if (sel && sel.options.length <= 1) renderParents();
+        }
+      };
+    } catch (e) {}
   },
   unlock: function () {
     if (!this.ok) return;
@@ -366,8 +384,9 @@ var TTS = {
       try {
         window.speechSynthesis.cancel();
         var u = new SpeechSynthesisUtterance(self.toWords(text));
-        u.lang = 'de-DE'; u.rate = settings.ttsRate || 0.85; u.pitch = 1.05;
-        if (self.voice) u.voice = self.voice;
+        u.rate = settings.ttsRate || 0.85; u.pitch = settings.ttsPitch || 1.05;
+        if (!self.voice) self.choose();
+        if (self.voice) { u.voice = self.voice; u.lang = self.voice.lang; } else { u.lang = 'de-DE'; }
         u.onend = finish; u.onerror = finish;
         var est = Math.max(1200, (text.length * 95) / (settings.ttsRate || 0.85));
         fallback = setTimeout(finish, est + 1500);
@@ -949,6 +968,11 @@ function renderParents() {
     return;
   }
   var A = analysis();
+  var vlist = TTS.german(); if (!vlist.length) vlist = TTS.list();
+  var voiceOptions = '<option value=""' + (settings.voiceName ? '' : ' selected') + '>Automatisch (empfohlen)</option>' +
+    vlist.map(function (v) {
+      return '<option value="' + esc(v.name) + '"' + (settings.voiceName === v.name ? ' selected' : '') + '>' + esc(v.name) + ' (' + esc(v.lang) + ')</option>';
+    }).join('');
   var rates = Object.keys(stats.successRates).sort().map(function (key) {
     var p = key.split('_'), d = stats.successRates[key], r = d.total ? Math.round(100 * d.correct / d.total) : 0;
     return '<div class="statrow"><span>' + esc(TYPE_LABEL[p[0]] || p[0]) + ' (bis ' + esc(p[1]) + ')</span><span style="font-weight:800">' + r + '% <b style="font-weight:600;color:var(--s400)">(' + d.correct + '/' + d.total + ')</b></span></div><div class="bar"><i style="width:' + r + '%"></i></div>';
@@ -971,7 +995,12 @@ function renderParents() {
     '<div><label>Lernzeit pro Session: <span id="limlbl">' + settings.sessionLimitMinutes + '</span> Min.</label><input type="range" id="limit" min="3" max="30" step="1" value="' + settings.sessionLimitMinutes + '"><p class="small">Zwei Minuten vor Ablauf gibt es eine sanfte Vorwarnung. Die Session endet erst nach der laufenden Aufgabe.</p></div>' +
     '<div><label>Maximaler Zahlenraum (deckelt die Automatik)</label><div class="seg"><button data-m="10" class="' + (settings.maxNumber === 10 ? 'sel' : '') + '">Bis 10</button><button data-m="20" class="' + (settings.maxNumber === 20 ? 'sel' : '') + '">Bis 20</button></div><p class="small">Aktuelle automatische Stufe: bis ' + user.adaptiveMax + '. Nach 5 richtigen in Folge geht es eine Stufe hoch, nach 3 Fehlern in Folge eine Stufe runter (5 → 10 → 20).</p></div>' +
     '<div class="sub"><div class="toggle"><span>Sprachausgabe (Vorlesen)</span><input type="checkbox" id="tts" ' + (settings.ttsEnabled ? 'checked' : '') + '></div>' +
-    '<div id="ttsopts" style="' + (settings.ttsEnabled ? '' : 'display:none') + '"><label>Sprechtempo: <span id="ratelbl">' + settings.ttsRate + '</span></label><input type="range" id="rate" min="0.7" max="1.1" step="0.05" value="' + settings.ttsRate + '"><button class="pbtn grey" id="test" style="margin-top:8px">Stimme testen</button><p class="small" style="margin-top:8px">Für Sprachausgabe ohne Internet muss das deutsche Sprachpaket auf dem Gerät installiert sein (Android: Einstellungen → System → Sprachen → Text-in-Sprache).</p></div>' +
+    '<div id="ttsopts" style="' + (settings.ttsEnabled ? '' : 'display:none') + '">' +
+    '<label>Stimme</label><select id="voice" style="width:100%;padding:9px;border:2px solid var(--s200);border-radius:12px;font-size:.92rem;background:#fff">' + voiceOptions + '</select>' +
+    '<label style="margin-top:10px">Sprechtempo: <span id="ratelbl">' + settings.ttsRate + '</span></label><input type="range" id="rate" min="0.7" max="1.1" step="0.05" value="' + settings.ttsRate + '">' +
+    '<label style="margin-top:6px">Stimmlage: <span id="pitchlbl">' + settings.ttsPitch + '</span></label><input type="range" id="pitch" min="0.8" max="1.4" step="0.05" value="' + settings.ttsPitch + '">' +
+    '<button class="pbtn grey" id="test" style="margin-top:8px">Stimme anhören</button>' +
+    '<p class="small" style="margin-top:8px">Klingt die Stimme blechern, hilft meist eine andere Auswahl oben. Stehen kaum Stimmen zur Wahl: Einstellungen → Allgemeine Verwaltung bzw. System → Text-zu-Sprache → als Modul <b>Sprachausgabe von Google</b> wählen und dort die deutschen Stimmen herunterladen. Danach die App einmal komplett schließen und neu öffnen. Für Sprachausgabe ohne Internet muss ein deutsches Sprachpaket auf dem Gerät installiert sein.</p></div>' +
     '<div class="toggle" style="border-top:1px solid var(--s200);padding-top:10px"><span>Erfolgs-Soundeffekt</span><input type="checkbox" id="sfx" ' + (settings.sfxEnabled ? 'checked' : '') + '></div>' +
     '<div class="toggle" style="border-top:1px solid var(--s200);padding-top:10px"><span>Fokus-Modus</span><input type="checkbox" id="focus" ' + (settings.focusMode ? 'checked' : '') + '></div><p class="small" style="margin:0">Öffnet die Übung im Vollbild und zeigt beim Zurückkommen einen Begrüßungs-Bildschirm, wenn die App zwischendurch verlassen wurde. <b>Wichtig:</b> Der Home-Button lässt sich technisch nicht sperren – dafür bitte das Anheften des Bildschirms nutzen (Anleitung unten).</p>' +
     '<div class="toggle" style="border-top:1px solid var(--s200);padding-top:10px"><span>Zahlenstrahl anzeigen</span><input type="checkbox" id="nline" ' + (settings.showNumberLine ? 'checked' : '') + '></div><p class="small" style="margin:0">Der Zahlenstrahl hilft beim Verknüpfen von Menge und Zahl. Ausblenden, wenn er als zu viel Reiz empfunden wird.</p></div>' +
@@ -1000,7 +1029,9 @@ function renderParents() {
   });
   on('#tts', 'change', function (ev) { settings.ttsEnabled = ev.target.checked; saveSettings(); APP.querySelector('#ttsopts').style.display = settings.ttsEnabled ? '' : 'none'; });
   on('#rate', 'input', function (ev) { settings.ttsRate = parseFloat(ev.target.value); APP.querySelector('#ratelbl').textContent = settings.ttsRate; saveSettings(); });
-  on('#test', 'click', function () { TTS.speak('Hallo ' + user.childName + '! So klinge ich. 7 und 3 sind zusammen 10.', S.token); });
+  on('#pitch', 'input', function (ev) { settings.ttsPitch = parseFloat(ev.target.value); APP.querySelector('#pitchlbl').textContent = settings.ttsPitch; saveSettings(); });
+  on('#voice', 'change', function (ev) { settings.voiceName = ev.target.value; saveSettings(); TTS.choose(); TTS.speak('Hallo ' + user.childName + '! So klinge ich.', S.token); });
+  on('#test', 'click', function () { TTS.choose(); TTS.speak('Hallo ' + user.childName + '! So klinge ich. 7 und 3 sind zusammen 10. Wie viele Möhren liegen hier?', S.token); });
   on('#sfx', 'change', function (ev) { settings.sfxEnabled = ev.target.checked; saveSettings(); if (settings.sfxEnabled) successSound(); });
   on('#nline', 'change', function (ev) { settings.showNumberLine = ev.target.checked; saveSettings(); });
   on('#focus', 'change', function (ev) { settings.focusMode = ev.target.checked; saveSettings(); if (!settings.focusMode && document.fullscreenElement && document.exitFullscreen) { try { document.exitFullscreen(); } catch (e) {} } });

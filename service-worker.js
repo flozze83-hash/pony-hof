@@ -1,5 +1,5 @@
 /* Pony-Hof der Zahlen – Service Worker (Offline-Cache) */
-var CACHE = 'ponyhof-v6';
+var CACHE = 'ponyhof-v7';
 var FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', function (e) {
