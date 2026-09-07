@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ec4899">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Pony-Hof der Zahlen</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+:root{
+  --pink:#ec4899;--pink-d:#db2777;--pink-100:#fce7f3;--pink-50:#fdf2f8;
+  --blue:#3b82f6;--blue-d:#2563eb;--blue-100:#dbeafe;--blue-50:#eff6ff;--blue-900:#1e3a8a;
+  --green:#22c55e;--green-d:#16a34a;--green-100:#dcfce7;--green-900:#14532d;
+  --amber-100:#fef3c7;--amber-200:#fde68a;--amber-800:#92400e;
+  --purple-100:#f3e8ff;--purple-900:#581c87;--orange-100:#ffedd5;--orange-900:#7c2d12;
+  --s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;--s300:#cbd5e1;--s400:#94a3b8;--s500:#64748b;--s600:#475569;--s800:#1e293b;
+  --yellow-100:#fef9c3;--yellow-300:#fde047;--yellow-800:#854d0e;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--s50);color:var(--s800);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{font-family:inherit;border:0;cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+input{font-family:inherit}
+.screen{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:16px 12px 40px;animation:fade .35s ease-out}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.up{animation:up .4s ease-out}
+.center{justify-content:center;text-align:center}
+h1{font-size:1.9rem;color:var(--blue-900);margin:.4em 0}
+h2{font-size:1.5rem;margin:.3em 0}
+h3{font-size:1.1rem;margin:.6em 0 .4em}
+p{line-height:1.45}
+.card{background:#fff;border-radius:24px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid var(--s100);padding:16px;width:100%;max-width:640px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:14px 26px;font-size:1.15rem;font-weight:800;transition:transform .08s}
+.btn:active{transform:scale(.96)}
+.btn-pink{background:var(--pink);color:#fff;box-shadow:0 4px 12px rgba(236,72,153,.3)}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-green{background:var(--green);color:#fff}
+.btn-soft{background:#fff;border:2px solid var(--s200);color:var(--s600)}
+.btn-amber{background:#fff;border:2px solid var(--amber-200);color:var(--amber-800)}
+.btn-sm{padding:8px 16px;font-size:.95rem}
+.iconbtn{width:46px;height:46px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;color:var(--s400)}
+.iconbtn svg{width:24px;height:24px}
+.topleft{position:absolute;top:10px;left:10px;z-index:5}
+.topright{position:absolute;top:10px;right:10px;z-index:5}
+.pony{width:88px;height:88px;flex-shrink:0}
+.pony.big{width:120px;height:120px}
+.pony.sm{width:64px;height:64px}
+.row{display:flex;align-items:center;gap:14px}
+.field{width:100%;max-width:360px;text-align:left}
+.field label{font-weight:700;color:var(--s600);margin-left:6px}
+.field input{width:100%;padding:14px;border-radius:18px;border:2px solid var(--pink-100);font-size:1.2rem;margin-top:6px}
+.field input:focus{outline:2px solid var(--pink)}
+.choice{display:flex;gap:18px}
+.choice button{background:#fff;border-radius:24px;padding:14px;border:4px solid transparent;opacity:.7;display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:800;color:var(--s600)}
+.choice button.sel{border-color:var(--pink);opacity:1;transform:scale(1.04)}
+.stars{display:inline-flex;align-items:center;gap:6px;background:var(--pink-100);color:var(--pink-d);font-weight:800;padding:5px 12px;border-radius:999px;font-size:.95rem;margin-top:6px}
+.stars svg{width:16px;height:16px;fill:currentColor}
+.exgrid{display:grid;grid-template-columns:1fr;gap:10px;width:100%;max-width:640px}
+@media(min-width:560px){.exgrid{grid-template-columns:1fr 1fr}}
+.ex{display:flex;align-items:center;gap:14px;padding:14px;border-radius:20px;font-size:1.15rem;font-weight:800;text-align:left}
+.ex .ico{width:48px;height:48px;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0}
+.ex .ico svg{width:30px;height:30px}
+.ex.count{background:var(--blue-100);color:var(--blue-900)}
+.ex.friends10{background:var(--purple-100);color:var(--purple-900)}
+.ex.plus{background:var(--green-100);color:var(--green-900)}
+.ex.minus{background:var(--orange-100);color:var(--orange-900)}
+.locked{background:var(--amber-100);border:2px solid var(--amber-200);border-radius:24px;padding:24px;text-align:center;max-width:420px;color:var(--amber-800)}
+/* play */
+.bubblewrap{display:flex;align-items:flex-start;gap:10px;width:100%;max-width:640px;margin-top:52px;background:#fff;border-radius:24px;padding:12px;border:1px solid var(--blue-100)}
+.bubble{position:relative;flex:1;background:var(--blue-50);border-radius:18px;border-top-left-radius:4px;padding:12px 12px;display:flex;align-items:center;gap:8px;margin-top:8px;min-height:64px}
+.bubble p{margin:0;font-weight:800;color:var(--blue-900);font-size:1.05rem;flex:1}
+.bubble .iconbtn{width:40px;height:40px;color:var(--blue)}
+.banner{background:var(--amber-200);color:var(--amber-800);font-weight:800;padding:8px 16px;border-radius:999px;font-size:.9rem;margin-top:6px;animation:up .4s}
+.frame{background:#fff;border-radius:20px;padding:10px;margin-top:14px;border:1px solid var(--s100);display:flex;flex-direction:column;gap:6px}
+.frow{display:flex;gap:4px}
+.slot{--sz:min(calc((100vw - 64px) / 10.6),44px);width:var(--sz);height:var(--sz);border:2px solid var(--s200);border-radius:8px;position:relative;padding:3px;transition:transform .25s,box-shadow .25s;background:#fff}
+.slot:nth-child(5){margin-right:10px}
+.slot.base,.slot.add,.slot.sub{border-color:#93c5fd;background:var(--blue-50)}
+.slot svg{width:100%;height:100%;display:block}
+.slot .x{position:absolute;inset:0;padding:2px;color:rgba(100,116,139,.75)}
+.slot.hl{transform:scale(1.15);box-shadow:0 0 0 4px var(--pink);background:var(--pink-100);z-index:2}
+.slot .cnum{display:none;position:absolute;top:-22px;left:50%;transform:translateX(-50%);background:#fff;color:var(--pink-d);font-weight:900;font-size:.85rem;padding:1px 8px;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.slot.hl .cnum{display:block}
+.nline{width:100%;max-width:640px;background:#fff;border-radius:16px;border:1px solid var(--s100);margin-top:16px;padding:14px 14px 30px;position:relative}
+.nline .rail{height:4px;background:var(--s300);border-radius:2px;position:absolute;left:14px;right:14px;top:22px}
+.ticks{display:flex;justify-content:space-between;position:relative}
+.tick{display:flex;flex-direction:column;align-items:center;position:relative;width:12px}
+.tick i{display:block;width:3px;height:12px;background:var(--s300);border-radius:2px;margin-top:4px}
+.tick.big i{background:var(--s500);height:16px;margin-top:0}
+.tick .lbl{position:absolute;top:24px;font-size:.78rem;font-weight:800;color:var(--s400);transition:transform .15s}
+.tick.big .lbl{color:var(--s600)}
+.tick.active .lbl{color:var(--pink-d);background:var(--pink-100);padding:0 6px;border-radius:999px;font-size:1rem;transform:scale(1.2)}
+@media(max-width:480px){.nline.nl20 .tick.odd .lbl{display:none}}
+.answer{width:110px;height:58px;background:#fff;border:4px solid var(--blue-100);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;margin-top:14px;box-shadow:inset 0 2px 4px rgba(0,0,0,.06)}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:260px;margin-top:14px}
+.key{height:54px;border-radius:16px;font-size:1.5rem;font-weight:800;background:var(--blue-50);color:var(--blue-900);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.key:active{transform:scale(.95)}
+.key.del{background:var(--s100);color:var(--s600)}
+.key.ok{background:var(--green);color:#fff}
+.key svg{width:28px;height:28px}
+.feedback{margin-top:14px;padding:14px;border-radius:22px;display:flex;align-items:center;gap:10px;max-width:560px;width:100%;font-weight:800;font-size:1.05rem;animation:up .35s}
+.feedback.ok{background:var(--green-100);color:var(--green-900);border:2px solid #86efac}
+.feedback.no{background:var(--yellow-100);color:var(--yellow-800);border:2px solid var(--yellow-300)}
+.feedback svg.star{width:34px;height:34px;fill:#facc15;color:#facc15;flex-shrink:0}
+/* reward */
+.farm{width:100%;max-width:560px;border-radius:24px;overflow:hidden;border:8px solid #86efac;box-shadow:inset 0 2px 8px rgba(0,0,0,.08)}
+.farm svg{display:block;width:100%;height:auto}
+.newbox{margin-top:16px;background:#fff;padding:14px;border-radius:22px;border:2px solid var(--yellow-300);text-align:center;max-width:420px;width:100%}
+.newbox .item{font-size:1.5rem;font-weight:900;color:var(--pink-d)}
+/* parents */
+.pwrap{width:100%;max-width:980px}
+.pgrid{display:grid;grid-template-columns:1fr;gap:16px;width:100%}
+@media(min-width:760px){.pgrid{grid-template-columns:1fr 1fr}}
+.pcard{background:#fff;border-radius:22px;border:1px solid var(--s100);padding:18px;display:flex;flex-direction:column;gap:14px}
+.pcard label{font-size:.85rem;font-weight:800;color:var(--s600);display:block;margin-bottom:6px}
+.pcard input[type=range]{width:100%;accent-color:var(--pink)}
+.seg{display:flex;gap:10px}
+.seg button{flex:1;padding:10px;border-radius:14px;font-weight:800;border:2px solid var(--s200);background:#fff;color:var(--s500)}
+.seg button.sel{border-color:var(--pink);background:var(--pink-50);color:var(--pink-d)}
+.toggle{display:flex;justify-content:space-between;align-items:center;font-weight:800;color:var(--s600)}
+.toggle input{width:22px;height:22px;accent-color:var(--pink)}
+.sub{background:var(--s50);border:1px solid var(--s100);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.small{font-size:.78rem;color:var(--s400);line-height:1.35}
+.pbtn{width:100%;padding:10px;border-radius:14px;font-weight:800;font-size:.95rem}
+.pbtn.blue{background:var(--blue-100);color:var(--blue-900)}
+.pbtn.purple{background:var(--purple-100);color:var(--purple-900)}
+.pbtn.grey{background:var(--s100);color:var(--s600)}
+.pbtn.red{background:#fee2e2;color:#991b1b}
+.pbtn.green{background:var(--green-100);color:var(--green-900)}
+.pinbox{display:flex;gap:8px}
+.pinbox input{flex:1;padding:10px;border:2px solid var(--s200);border-radius:12px;font-size:1.1rem;text-align:center;letter-spacing:.3em}
+.statrow{display:flex;justify-content:space-between;font-size:.9rem;margin-top:8px}
+.bar{height:8px;background:var(--s200);border-radius:4px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--s100);color:var(--s600);border-radius:999px;padding:4px 10px;font-size:.8rem;font-weight:800}
+.chip b{color:var(--s400);font-weight:600}
+.cols{display:flex;align-items:flex-end;gap:4px;height:90px;border-bottom:2px solid var(--s200);padding-bottom:0}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.col i{display:block;width:70%;background:var(--blue);border-radius:4px 4px 0 0;min-height:2px}
+.col span{position:absolute;bottom:-18px;font-size:.6rem;color:var(--s400);white-space:nowrap}
+.col em{position:absolute;top:-4px;font-size:.6rem;font-style:normal;color:var(--s500)}
+.errlist div{padding:8px 4px;border-bottom:1px solid var(--s100);font-size:.85rem;display:flex;justify-content:space-between;align-items:center}
+.errlist .meta{font-size:.7rem;color:var(--s400)}
+.pinscreen{background:#fff;padding:32px;border-radius:24px;max-width:340px;width:100%;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.pinscreen input{width:100%;text-align:center;font-size:1.6rem;letter-spacing:.4em;padding:14px;border:2px solid var(--s200);border-radius:14px;margin:10px 0}
+.pinscreen input.err{border-color:#f87171}
+.errmsg{color:#b91c1c;font-size:.85rem;font-weight:700}
+.scrollbox{max-height:70vh;overflow:auto;padding-right:4px}
+.breathe{animation:breathe 2.5s ease-in-out infinite}
+.petbtn{background:none;padding:0;border-radius:50%;position:relative;display:inline-block;-webkit-tap-highlight-color:transparent}
+.petbtn .pony{display:block;transition:transform .2s}
+.petbtn:active .pony{transform:scale(.96)}
+@keyframes nuzzle{0%{transform:rotate(0) scale(1)}25%{transform:rotate(-7deg) scale(1.06)}55%{transform:rotate(6deg) scale(1.08)}80%{transform:rotate(-3deg) scale(1.04)}100%{transform:rotate(0) scale(1)}}
+.petbtn.pet .pony{animation:nuzzle 1s ease-in-out}
+.heartfx{position:absolute;left:50%;top:15%;width:22px;height:22px;pointer-events:none;animation:floatup 1.5s ease-out forwards}
+@keyframes floatup{0%{opacity:0;transform:translate(-50%,0) scale(.5)}20%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),-95px) scale(1.15)}}
+.backover{position:fixed;inset:0;background:var(--pink-50);z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;animation:fade .3s}
+.backover h2{color:var(--pink-d);margin:14px 0 6px}
+.backover p{color:var(--s600);font-weight:700;max-width:340px;margin:0 0 22px}
+.pethint{font-size:.85rem;color:var(--s400);margin-top:4px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-carrot" viewBox="0 0 24 24"><path fill="#f97316" d="M15.5 3c-2 0-4.5 1.5-6 3l-5 7c-1 1.5-.5 3.5 1 4.5s3.5 2 5 1l7-5c1.5-1.5 3-4 3-6 0-2.5-2.5-4.5-5-4.5z"/><path fill="#22c55e" d="M16 2c0-1.5-1-2-2.5-2S12 1 12 2s1 1.5 2.5 1.5S16 3.5 16 2zm2 2.5c.5-1.5 2-2 3.2-1.4.8.4.8 1.8-.2 2.4z"/></symbol>
+    <symbol id="i-shoe" viewBox="0 0 24 24"><path d="M6 20 V11 a6 6 0 0 1 12 0 V20" fill="none" stroke="#64748b" stroke-width="4.6" stroke-linecap="round"/><path d="M6 20 V11 a6 6 0 0 1 12 0 V20" fill="none" stroke="#94a3b8" stroke-width="2.4" stroke-linecap="round"/><circle cx="6" cy="16" r="1" fill="#fff"/><circle cx="18" cy="16" r="1" fill="#fff"/><circle cx="8.2" cy="7.6" r="1" fill="#fff"/><circle cx="15.8" cy="7.6" r="1" fill="#fff"/></symbol>
+    <symbol id="i-apple" viewBox="0 0 24 24"><path d="M12 6 Q12 3 14 2" stroke="#78350f" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M12.5 5 Q16 2.5 18 5 Q15 7 12.5 5z" fill="#22c55e"/><path d="M12 7 C8 4 3 7 4 13 C5 18 8 22 11 21 C11.5 20.8 12.5 20.8 13 21 C16 22 19 18 20 13 C21 7 16 4 12 7z" fill="#ef4444"/><ellipse cx="8.5" cy="11" rx="1.5" ry="2.5" fill="#fca5a5" opacity=".8"/></symbol>
+    <symbol id="i-hay" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="13" rx="4" fill="#facc15" stroke="#ca8a04" stroke-width="1.6"/><path d="M7 8.5v8M12 8.5v8M17 8.5v8" stroke="#ca8a04" stroke-width="1.4" stroke-linecap="round"/><path d="M4 12.5h16" stroke="#a16207" stroke-width="1.2"/></symbol>
+    <symbol id="i-sugar" viewBox="0 0 24 24"><path d="M5 8 L10 3 H21 L16 8z" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.2" stroke-linejoin="round"/><path d="M16 8 L21 3 V14 L16 19z" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.2" stroke-linejoin="round"/><rect x="5" y="8" width="11" height="11" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2"/></symbol>
+    <symbol id="i-brush" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="2.5" fill="#b45309"/><rect x="5" y="5.5" width="14" height="2" rx="1" fill="#d97706"/><path d="M5 11v7M8 11v7M11 11v7M14 11v7M17 11v7M20 11v7" stroke="#fbbf24" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-flower" viewBox="0 0 24 24"><path d="M12 13v9" stroke="#15803d" stroke-width="2" stroke-linecap="round"/><path d="M12 18 Q8 17 7 14 Q11 14 12 18z" fill="#22c55e"/><circle cx="12" cy="5" r="3.2" fill="#f472b6"/><circle cx="6.5" cy="9" r="3.2" fill="#f472b6"/><circle cx="17.5" cy="9" r="3.2" fill="#f472b6"/><circle cx="8" cy="15" r="3" fill="#f472b6"/><circle cx="16" cy="15" r="3" fill="#f472b6"/><circle cx="12" cy="10.5" r="3" fill="#facc15"/></symbol>
+    <symbol id="i-cross" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 22V12h6v10" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path fill="#a855f7" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <!-- Pony-Kopf (Vorderansicht) -->
+    <symbol id="i-ponyhead" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="48" fill="#fff" stroke="#bfdbfe" stroke-width="4"/>
+      <path d="M30 34 L20 12 L42 28 Z" fill="#d97706"/><path d="M70 34 L80 12 L58 28 Z" fill="#d97706"/>
+      <ellipse cx="50" cy="58" rx="28" ry="30" fill="#d97706"/>
+      <path d="M26 40 Q50 8 74 40 Q62 30 50 34 Q38 30 26 40Z" fill="#78350f"/>
+      <ellipse cx="50" cy="74" rx="16" ry="11" fill="#fde68a"/>
+      <circle cx="44" cy="76" r="1.8" fill="#1e293b"/><circle cx="56" cy="76" r="1.8" fill="#1e293b"/>
+      <circle cx="38" cy="52" r="4.5" fill="#1e293b"/><circle cx="62" cy="52" r="4.5" fill="#1e293b"/>
+      <circle cx="39.5" cy="50.5" r="1.4" fill="#fff"/><circle cx="63.5" cy="50.5" r="1.4" fill="#fff"/>
+    </symbol>
+    <symbol id="i-unicornhead" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="48" fill="#fff" stroke="#f9a8d4" stroke-width="4"/>
+      <path d="M30 34 L20 12 L42 28 Z" fill="#d97706"/><path d="M70 34 L80 12 L58 28 Z" fill="#d97706"/>
+      <path d="M50 2 L44 34 L56 34 Z" fill="#fbbf24"/>
+      <ellipse cx="50" cy="58" rx="28" ry="30" fill="#d97706"/>
+      <path d="M26 40 Q50 12 74 40 Q62 30 50 34 Q38 30 26 40Z" fill="#f472b6"/>
+      <ellipse cx="50" cy="74" rx="16" ry="11" fill="#fde68a"/>
+      <circle cx="44" cy="76" r="1.8" fill="#1e293b"/><circle cx="56" cy="76" r="1.8" fill="#1e293b"/>
+      <circle cx="38" cy="52" r="4.5" fill="#1e293b"/><circle cx="62" cy="52" r="4.5" fill="#1e293b"/>
+      <circle cx="39.5" cy="50.5" r="1.4" fill="#fff"/><circle cx="63.5" cy="50.5" r="1.4" fill="#fff"/>
+    </symbol>
+    <symbol id="i-ponyhead-happy" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="48" fill="#fff" stroke="#bfdbfe" stroke-width="4"/>
+      <path d="M30 34 L20 12 L42 28 Z" fill="#d97706"/><path d="M70 34 L80 12 L58 28 Z" fill="#d97706"/>
+      <ellipse cx="50" cy="58" rx="28" ry="30" fill="#d97706"/>
+      <path d="M26 40 Q50 8 74 40 Q62 30 50 34 Q38 30 26 40Z" fill="#78350f"/>
+      <ellipse cx="50" cy="74" rx="16" ry="11" fill="#fde68a"/>
+      <circle cx="44" cy="76" r="1.8" fill="#1e293b"/><circle cx="56" cy="76" r="1.8" fill="#1e293b"/>
+      <path d="M32 54 Q38 47 44 54" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M56 54 Q62 47 68 54" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="30" cy="62" r="5" fill="#fb7185" opacity=".55"/><circle cx="70" cy="62" r="5" fill="#fb7185" opacity=".55"/>
+    </symbol>
+    <symbol id="i-unicornhead-happy" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="48" fill="#fff" stroke="#f9a8d4" stroke-width="4"/>
+      <path d="M30 34 L20 12 L42 28 Z" fill="#d97706"/><path d="M70 34 L80 12 L58 28 Z" fill="#d97706"/>
+      <path d="M50 2 L44 34 L56 34 Z" fill="#fbbf24"/>
+      <ellipse cx="50" cy="58" rx="28" ry="30" fill="#d97706"/>
+      <path d="M26 40 Q50 12 74 40 Q62 30 50 34 Q38 30 26 40Z" fill="#f472b6"/>
+      <ellipse cx="50" cy="74" rx="16" ry="11" fill="#fde68a"/>
+      <circle cx="44" cy="76" r="1.8" fill="#1e293b"/><circle cx="56" cy="76" r="1.8" fill="#1e293b"/>
+      <path d="M32 54 Q38 47 44 54" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M56 54 Q62 47 68 54" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="30" cy="62" r="5" fill="#fb7185" opacity=".55"/><circle cx="70" cy="62" r="5" fill="#fb7185" opacity=".55"/>
+    </symbol>
+    <symbol id="i-heartpink" viewBox="0 0 24 24"><path fill="#f472b6" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+  </defs>
+</svg>
+<div id="app"></div>
+<script>
+(function () {
+'use strict';
+
+/* ================= Konstanten ================= */
+var APP = document.getElementById('app');
+var NUMWORDS = ['null','eins','zwei','drei','vier','fünf','sechs','sieben','acht','neun','zehn','elf','zwölf','dreizehn','vierzehn','fünfzehn','sechzehn','siebzehn','achtzehn','neunzehn','zwanzig'];
+var TYPE_LABEL = { count: 'Zählen', friends10: 'Zehnerfreunde', plus: 'Plus', minus: 'Minus' };
+var ITEMS = ['Zaun','Blumen','Trog','Stall','Namensschild','Pony-Freund','Apfelbaum','Teich','Schaukel','Regenbogen','Heuballen','Sattel','Halfter','Decke','Schmetterlinge','Zweiter Freund','Turnierschleife','Windrad','Brücke','Sternenhimmel','Glitzermähne'];
+var ACC = ['Schleife','Decke','Hufeisen','Blumenkranz','Halfter','Sattel'];
+var ACC_COLORS = [['Rot','#ef4444'],['Blau','#3b82f6'],['Gold','#f59e0b'],['Lila','#a855f7'],['Grün','#22c55e'],['Rosa','#f472b6']];
+var OBJECTS = [
+  { id: 'carrot', sg: 'Möhre', pl: 'Möhren', art: 'eine', edible: true },
+  { id: 'apple', sg: 'Apfel', pl: 'Äpfel', art: 'ein', edible: true },
+  { id: 'shoe', sg: 'Hufeisen', pl: 'Hufeisen', art: 'ein', edible: false },
+  { id: 'hay', sg: 'Heuballen', pl: 'Heuballen', art: 'ein', edible: true },
+  { id: 'sugar', sg: 'Zuckerwürfel', pl: 'Zuckerwürfel', art: 'ein', edible: true },
+  { id: 'brush', sg: 'Bürste', pl: 'Bürsten', art: 'eine', edible: false },
+  { id: 'flower', sg: 'Blume', pl: 'Blumen', art: 'eine', edible: true }
+];
+function gw(f, m) { return user.gender === 'm' ? m : f; }
+var PET_LINES = function () { var n = user.childName; return ['Mmmh, das tut gut!', 'Danke, ' + n + '! Das kitzelt.', 'Ich hab dich lieb, ' + n + '.', 'Hihi, noch mal bitte!', 'Du bist ' + gw('die Beste', 'der Beste') + ', ' + n + '!', 'Das ist schön. Jetzt bin ich ganz entspannt.', 'Du bist ' + gw('meine liebste Freundin', 'mein liebster Freund') + '.']; };
+var GREETINGS = function () { return ['Hallo', 'Schön, dass du da bist', 'Willkommen zurück', 'Hallo, ' + gw('kleine Reiterin', 'kleiner Reiter'), 'Da bist du ja']; };
+var PRAISE = ['Super', 'Klasse', 'Toll', 'Prima', 'Stark', 'Weiter so', 'Richtig', 'Genau', 'Wunderbar', 'Spitze', 'Ganz genau', 'Das stimmt', 'Sehr gut'];
+
+var DEF_USER = { childName: '', gender: null, companionType: null, companionName: '', stars: 0, farmLevel: 1, streak: 0, adaptiveMax: 10, sessionLocked: false, lastPlayed: null };
+var DEF_SETTINGS = { sessionLimitMinutes: 15, maxNumber: 10, pin: '1234', ttsEnabled: true, ttsRate: 0.85, sfxEnabled: false, showNumberLine: true, focusMode: false };
+var DEF_STATS = { errors: [], sessions: [], playtimeTotal: 0, successRates: {}, crossTen: { correct: 0, total: 0 }, daily: {}, leaves: 0, leaveLog: [] };
+
+/* ================= Speicher ================= */
+function load(key, def) {
+  try {
+    var raw = localStorage.getItem(key);
+    var v = raw ? JSON.parse(raw) : null;
+    if (v && typeof v === 'object') return Object.assign({}, def, v);
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(def));
+}
+function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+
+var user = load('ponyhof_user', DEF_USER);
+var settings = load('ponyhof_settings', DEF_SETTINGS);
+var stats = load('ponyhof_stats', DEF_STATS);
+if (!Array.isArray(stats.errors)) stats.errors = [];
+if (!Array.isArray(stats.sessions)) stats.sessions = [];
+if (!stats.successRates || typeof stats.successRates !== 'object') stats.successRates = {};
+if (!stats.crossTen) stats.crossTen = { correct: 0, total: 0 };
+if (!stats.daily || typeof stats.daily !== 'object') stats.daily = {};
+if (typeof stats.leaves !== 'number') stats.leaves = 0;
+if (!Array.isArray(stats.leaveLog)) stats.leaveLog = [];
+if ([5, 10, 20].indexOf(user.adaptiveMax) < 0) user.adaptiveMax = 10;
+if ([10, 20].indexOf(settings.maxNumber) < 0) settings.maxNumber = 10;
+if (!settings.pin) settings.pin = '1234';
+if (typeof settings.showNumberLine !== 'boolean') settings.showNumberLine = true;
+if (typeof settings.focusMode !== 'boolean') settings.focusMode = false;
+
+function saveUser() { save('ponyhof_user', user); }
+function saveSettings() { save('ponyhof_settings', settings); }
+function saveStats() { save('ponyhof_stats', stats); }
+
+/* ================= Laufzeit-Zustand ================= */
+var S = {
+  screen: 'init', task: null, taskType: 'count', input: '', errorCount: 0, feedback: null,
+  shared: false, sharedIndex: -1, levelUp: false,
+  sessionStart: null, tasksInSession: 0, sessionCorrect: 0, sessionWrong: 0,
+  warned: false, expired: false, taskShownAt: 0,
+  token: { cancelled: false }, timer: null, parentsUnlocked: false, editNames: false,
+  wakeLock: null
+};
+
+/* ================= Hilfsfunktionen ================= */
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function rnd(n) { return Math.floor(Math.random() * n); }
+function companionWord() { return user.companionType === 'unicorn' ? 'Einhorn' : 'Pony'; }
+function headSymbol(type) { return type === 'unicorn' ? '#i-unicornhead' : '#i-ponyhead'; }
+function ponyHTML(type, cls) { return '<svg class="pony ' + (cls || '') + '"><use href="' + headSymbol(type || user.companionType) + '"/></svg>'; }
+function petHTML(cls) { return '<button class="petbtn" id="petbtn" aria-label="Streicheln">' + ponyHTML(null, cls) + '</button>'; }
+function petPony(wrap) {
+  var use = wrap.querySelector('use'); if (!use) return;
+  wrap.classList.remove('pet'); void wrap.offsetWidth; wrap.classList.add('pet');
+  use.setAttribute('href', headSymbol(user.companionType) + '-happy');
+  clearTimeout(wrap._t);
+  wrap._t = setTimeout(function () { use.setAttribute('href', headSymbol(user.companionType)); wrap.classList.remove('pet'); }, 1800);
+  for (var i = 0; i < 3; i++) {
+    var hh = document.createElement('span'); hh.className = 'heartfx';
+    hh.style.setProperty('--dx', (rnd(70) - 35) + 'px'); hh.style.animationDelay = (i * 0.18) + 's';
+    hh.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22"><use href="#i-heartpink"/></svg>';
+    wrap.appendChild(hh);
+    (function (el) { setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 2000); })(hh);
+  }
+  TTS.speak(pick(PET_LINES()), S.token);
+}
+function bindPet() { on('#petbtn', 'click', function (ev) { petPony(ev.currentTarget); }); }
+function icon(id, cls) { return '<svg class="' + (cls || '') + '"><use href="#i-' + id + '"/></svg>'; }
+function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function newToken() { S.token.cancelled = true; S.token = { cancelled: false }; return S.token; }
+function clearTimer() { if (S.timer) { clearTimeout(S.timer); S.timer = null; } }
+function on(sel, ev, fn) { var els = APP.querySelectorAll(sel); for (var i = 0; i < els.length; i++) els[i].addEventListener(ev, fn); }
+
+/* ================= Sprachausgabe & Ton ================= */
+var TTS = {
+  voice: null, ok: ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window),
+  init: function () {
+    if (!this.ok) return;
+    var self = this;
+    var choose = function () {
+      try {
+        var vs = window.speechSynthesis.getVoices() || [];
+        self.voice = vs.filter(function (v) { return /^de/i.test(v.lang) && /google/i.test(v.name); })[0]
+          || vs.filter(function (v) { return /^de/i.test(v.lang); })[0] || null;
+      } catch (e) {}
+    };
+    choose();
+    try { window.speechSynthesis.onvoiceschanged = choose; } catch (e) {}
+  },
+  unlock: function () {
+    if (!this.ok) return;
+    try { var u = new SpeechSynthesisUtterance(' '); u.volume = 0; window.speechSynthesis.speak(u); } catch (e) {}
+  },
+  cancel: function () { if (this.ok) { try { window.speechSynthesis.cancel(); } catch (e) {} } },
+  toWords: function (text) {
+    return String(text).replace(/\b(\d{1,2})\b/g, function (m, n) { n = parseInt(n, 10); return (n >= 0 && n <= 20) ? NUMWORDS[n] : m; });
+  },
+  speak: function (text, token) {
+    var self = this;
+    return new Promise(function (resolve) {
+      if (!settings.ttsEnabled || !self.ok || (token && token.cancelled)) { setTimeout(resolve, 450); return; }
+      var done = false, fallback = null;
+      var finish = function () { if (done) return; done = true; if (fallback) clearTimeout(fallback); resolve(); };
+      try {
+        window.speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(self.toWords(text));
+        u.lang = 'de-DE'; u.rate = settings.ttsRate || 0.85; u.pitch = 1.05;
+        if (self.voice) u.voice = self.voice;
+        u.onend = finish; u.onerror = finish;
+        var est = Math.max(1200, (text.length * 95) / (settings.ttsRate || 0.85));
+        fallback = setTimeout(finish, est + 1500);
+        setTimeout(function () { if (token && token.cancelled) { finish(); return; } try { window.speechSynthesis.speak(u); } catch (e) { finish(); } }, 60);
+      } catch (e) { finish(); }
+    });
+  }
+};
+TTS.init();
+
+var audioCtx = null;
+function audioUnlock() { try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (e) {} }
+function successSound() {
+  if (!settings.sfxEnabled) return;
+  try {
+    audioUnlock(); if (!audioCtx) return;
+    var t = audioCtx.currentTime, o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination); o.type = 'sine';
+    o.frequency.setValueAtTime(523, t); o.frequency.setValueAtTime(659, t + 0.12); o.frequency.setValueAtTime(784, t + 0.24);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.06, t + 0.03); g.gain.linearRampToValueAtTime(0.0001, t + 0.45);
+    o.start(t); o.stop(t + 0.46);
+  } catch (e) {}
+}
+var firstGesture = false;
+document.addEventListener('pointerdown', function () { if (firstGesture) return; firstGesture = true; TTS.unlock(); audioUnlock(); }, { passive: true });
+
+/* ================= Fokus-Modus ================= */
+function goFullscreen() {
+  if (!settings.focusMode) return;
+  try {
+    var el = document.documentElement;
+    if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen({ navigationUI: 'hide' }).catch(function () {});
+  } catch (e) {}
+}
+function showWelcomeBack() {
+  if (document.getElementById('backover')) return;
+  var box = document.createElement('div');
+  box.className = 'backover'; box.id = 'backover';
+  box.innerHTML = '<svg class="pony big"><use href="' + headSymbol(user.companionType) + '"/></svg>' +
+    '<h2>Da bist du ja wieder!</h2><p>' + esc(user.companionName || 'Dein Begleiter') + ' hat auf dich gewartet. Sollen wir weiter üben?</p>' +
+    '<button class="btn btn-pink" id="backbtn">Ja, weiter geht\'s!</button>';
+  document.body.appendChild(box);
+  box.querySelector('#backbtn').addEventListener('click', function () {
+    box.parentNode.removeChild(box); goFullscreen(); manageWakeLock();
+    TTS.speak('Schön, dass du wieder da bist!', S.token);
+  });
+}
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'hidden') {
+    if (S.screen === 'play' || S.screen === 'break') {
+      TTS.cancel();
+      stats.leaves = (stats.leaves || 0) + 1;
+      stats.leaveLog.unshift(new Date().toISOString());
+      if (stats.leaveLog.length > 50) stats.leaveLog.length = 50;
+      saveStats();
+      S.leftDuringTask = true;
+    }
+  } else if (settings.focusMode && S.leftDuringTask) {
+    S.leftDuringTask = false; showWelcomeBack();
+  }
+});
+
+/* ================= Wake Lock ================= */
+function manageWakeLock() {
+  var want = (S.screen === 'play');
+  if (!('wakeLock' in navigator)) return;
+  if (want && !S.wakeLock) {
+    navigator.wakeLock.request('screen').then(function (l) { S.wakeLock = l; l.addEventListener('release', function () { S.wakeLock = null; }); }).catch(function () {});
+  } else if (!want && S.wakeLock) {
+    try { S.wakeLock.release(); } catch (e) {} S.wakeLock = null;
+  }
+}
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') manageWakeLock(); });
+
+/* ================= Navigation ================= */
+var pushed = false;
+function go(screen, opts) {
+  opts = opts || {};
+  newToken(); clearTimer(); TTS.cancel();
+  S.screen = screen;
+  if (screen !== 'parents') S.parentsUnlocked = false;
+  if (!opts.noPush && screen !== 'menu') {
+    try { if (!pushed) { history.pushState({ screen: screen }, ''); pushed = true; } else { history.replaceState({ screen: screen }, ''); } } catch (e) {}
+  }
+  render();
+  manageWakeLock();
+  window.scrollTo(0, 0);
+}
+window.addEventListener('popstate', function () {
+  pushed = false;
+  if (S.screen !== 'menu' && S.screen !== 'setup' && S.screen !== 'init') go('menu', { noPush: true });
+});
+
+/* ================= Aufgaben ================= */
+function makeTask(type, range) {
+  var a, b, ans;
+  if (type === 'count') { ans = rnd(range) + 1; a = ans; b = 0; }
+  else if (type === 'friends10') { a = rnd(9) + 1; ans = 10 - a; b = 0; range = 10; }
+  else if (type === 'plus') { a = rnd(range - 1) + 1; b = rnd(range - a) + 1; ans = a + b; }
+  else { a = rnd(range - 1) + 2; b = rnd(a - 1) + 1; ans = a - b; }
+  var crosses = (type === 'plus' && a < 10 && b < 10 && ans > 10) || (type === 'minus' && a > 10 && b < 10 && ans < 10);
+  var obj = OBJECTS[rnd(OBJECTS.length)], obj2 = obj;
+  while (obj2 === obj) obj2 = OBJECTS[rnd(OBJECTS.length)];
+  return { type: type, a: a, b: b, answer: ans, range: range, crossesTen: crosses, obj: obj, obj2: obj2 };
+}
+function taskLabel(t) {
+  return t.type === 'plus' ? t.a + ' + ' + t.b : t.type === 'minus' ? t.a + ' − ' + t.b : t.type === 'friends10' ? t.a + ' + ? = 10' : 'Zähle ' + t.a;
+}
+/* Menge + Nomen: angezeigt "1 Möhre" / "4 Möhren", gesprochen "eine Möhre" / "vier Möhren" */
+function amount(n, o, spoken) {
+  var noun = n === 1 ? o.sg : o.pl;
+  var num = spoken ? (n === 1 ? o.art : NUMWORDS[n]) : String(n);
+  return num + ' ' + noun;
+}
+function questionText(t, spoken) {
+  var o = t.obj, o2 = t.obj2;
+  if (t.type === 'count') return 'Wie viele ' + o.pl + ' liegen hier?';
+  if (t.type === 'friends10') return 'Hier ' + (t.a === 1 ? 'ist ' : 'sind ') + amount(t.a, o, spoken) + '. Wie viele ' + o2.pl + ' fehlen noch bis 10?';
+  if (t.type === 'plus') return amount(t.a, o, spoken) + ' und ' + amount(t.b, o2, spoken) + '. Wie viele sind das zusammen?';
+  var verb = o.edible ? 'frisst ' + companionWord() + ' ' + user.companionName + ' auf' : 'trägt ' + companionWord() + ' ' + user.companionName + ' weg';
+  return 'Hier sind ' + amount(t.a, o, spoken) + '. ' + amount(t.b, o, spoken) + ' ' + verb + '. Wie viele bleiben übrig?';
+}
+function praiseText(t, spoken, word) {
+  var w = (word || pick(PRAISE)) + '! ';
+  if (t.type === 'count') return w + 'Das ' + (t.answer === 1 ? 'ist genau ' : 'sind genau ') + amount(t.answer, t.obj, spoken) + '.';
+  if (t.type === 'friends10') return w + t.a + ' und ' + t.answer + ' sind zusammen 10.';
+  if (t.type === 'plus') return w + t.a + ' und ' + t.b + ' sind zusammen ' + t.answer + '.';
+  return w + 'Von ' + t.a + ' nehmen wir ' + t.b + ' weg, dann ' + (t.answer === 1 ? 'bleibt ' : 'bleiben ') + t.answer + '.';
+}
+function slotState(t, i) {
+  if (t.type === 'count') return i < t.a ? 'base' : '';
+  if (t.type === 'friends10') return i < t.a ? 'base' : (i < 10 ? 'add' : '');
+  if (t.type === 'plus') return i < t.a ? 'base' : (i < t.a + t.b ? 'add' : '');
+  return i < t.a - t.b ? 'base' : (i < t.a ? 'sub' : '');
+}
+function sharedSlot(t, k) { return t.type === 'friends10' ? t.a + k : k; }
+function stepUp(r) { return r === 5 ? 10 : 20; }
+function stepDown(r) { return r === 20 ? 10 : 5; }
+function currentRange() { return Math.min(settings.maxNumber, user.adaptiveMax); }
+
+function newTask(type, overrideRange) {
+  newToken(); clearTimer(); TTS.cancel();
+  var range = overrideRange || currentRange();
+  S.task = makeTask(type, range);
+  S.input = ''; S.errorCount = 0; S.feedback = null; S.shared = false; S.sharedIndex = -1;
+  S.taskShownAt = Date.now();
+  S.screen = 'play';
+  render(); manageWakeLock(); window.scrollTo(0, 0);
+  TTS.speak(questionText(S.task, true), S.token);
+}
+function startExercise(type) {
+  if (user.sessionLocked) return;
+  goFullscreen();
+  if (!S.sessionStart) { S.sessionStart = Date.now(); S.tasksInSession = 0; S.sessionCorrect = 0; S.sessionWrong = 0; S.warned = false; S.expired = false; }
+  S.taskType = type;
+  go('play');
+  newTask(type);
+}
+
+/* ================= Statistik ================= */
+function recordResult(t, correct, given) {
+  var spent = Math.min(120, Math.max(1, Math.round((Date.now() - S.taskShownAt) / 1000)));
+  var key = t.type + '_' + t.range;
+  var sr = stats.successRates[key] || { correct: 0, total: 0 };
+  sr.total += 1; if (correct) sr.correct += 1; stats.successRates[key] = sr;
+  if (t.crossesTen) { stats.crossTen.total += 1; if (correct) stats.crossTen.correct += 1; }
+  var dk = dayKey(); var d = stats.daily[dk] || { c: 0, w: 0, s: 0 };
+  if (correct) d.c += 1; else d.w += 1; d.s += spent; stats.daily[dk] = d;
+  stats.playtimeTotal = (stats.playtimeTotal || 0) + spent;
+  if (!correct) {
+    stats.errors.unshift({ date: new Date().toISOString(), type: t.type, task: taskLabel(t), given: given, range: t.range, crossesTen: t.crossesTen });
+    if (stats.errors.length > 200) stats.errors.length = 200;
+  }
+  var keys = Object.keys(stats.daily).sort();
+  while (keys.length > 120) delete stats.daily[keys.shift()];
+  saveStats();
+}
+
+/* ================= Session / Zeit ================= */
+setInterval(function () {
+  if (!S.sessionStart || (S.screen !== 'play' && S.screen !== 'break')) return;
+  var elapsed = Math.floor((Date.now() - S.sessionStart) / 1000);
+  var limit = settings.sessionLimitMinutes * 60;
+  var warnAt = limit - (limit < 180 ? 60 : 120);
+  if (!S.warned && elapsed >= warnAt && elapsed < limit) {
+    S.warned = true;
+    var b = document.getElementById('banner'); if (b) b.style.display = 'block';
+    if (!S.shared && !S.feedback) TTS.speak('Noch kurze Zeit, dann darf ' + user.companionName + ' auf die Weide!', S.token);
+  }
+  if (elapsed >= limit) S.expired = true;
+}, 2000);
+
+function endSession() {
+  var elapsed = S.sessionStart ? Math.floor((Date.now() - S.sessionStart) / 1000) : 0;
+  stats.sessions.push({ date: new Date().toISOString(), duration: elapsed, tasks: S.tasksInSession, correct: S.sessionCorrect, wrong: S.sessionWrong });
+  if (stats.sessions.length > 100) stats.sessions.shift();
+  saveStats();
+  user.sessionLocked = true; saveUser();
+  S.sessionStart = null; S.expired = false; S.warned = false;
+  go('sessionEnd');
+  TTS.speak('Das war eine tolle Übungszeit, ' + user.childName + '! Dein ' + companionWord() + ' ' + user.companionName + ' freut sich schon auf morgen.', S.token);
+}
+
+/* ================= Antwort prüfen ================= */
+/* Spricht den Text und wartet, bis die Sprachausgabe fertig ist (mindestens minMs), plus eine kurze Nachpause. */
+function afterSpeech(text, token, minMs, pauseMs) {
+  var started = Date.now();
+  return TTS.speak(text, token).then(function () {
+    var rest = Math.max(0, minMs - (Date.now() - started)) + (pauseMs || 0);
+    return new Promise(function (r) { S.timer = setTimeout(r, rest); });
+  });
+}
+function checkAnswer() {
+  var t = S.task; if (!t || S.feedback) return;
+  var n = parseInt(S.input, 10); if (isNaN(n)) return;
+  var token = S.token;
+
+  if (n === t.answer) {
+    recordResult(t, true, n);
+    successSound();
+    var pw = pick(PRAISE), praise = praiseText(t, false, pw), praiseSpoken = praiseText(t, true, pw);
+    var newStreak = user.streak > 0 ? user.streak + 1 : 1;
+    var newMax = user.adaptiveMax;
+    if (newStreak % 5 === 0) {
+      var cand = Math.min(settings.maxNumber, stepUp(user.adaptiveMax));
+      if (cand > user.adaptiveMax) { newMax = cand; praise += ' Du bist bereit für die große Wiese!'; praiseSpoken += ' Du bist bereit für die große Wiese!'; }
+    }
+    user.stars += 1; user.streak = newStreak; user.adaptiveMax = newMax; saveUser();
+    S.tasksInSession += 1; S.sessionCorrect += 1;
+    S.feedback = { ok: true, msg: praise };
+    renderPlay();
+    var starsNow = user.stars;
+    afterSpeech(praiseSpoken, token, 2600, 700).then(function () {
+      if (token.cancelled) return;
+      if (S.expired) { endSession(); return; }
+      if (starsNow % 3 === 0) { user.farmLevel += 1; saveUser(); S.levelUp = true; go('reward'); return; }
+      if (S.tasksInSession % 10 === 0) { go('break'); return; }
+      newTask(S.taskType);
+    });
+  } else {
+    recordResult(t, false, n);
+    S.sessionWrong += 1;
+    S.errorCount += 1;
+    var st = user.streak > 0 ? -1 : user.streak - 1;
+    if (st <= -3) { user.adaptiveMax = stepDown(user.adaptiveMax); st = 0; }
+    user.streak = st; saveUser();
+    if (S.errorCount >= 2) { sharedCounting(token); }
+    else {
+      var msg = 'Schau noch mal genau hin. Du schaffst das!';
+      S.feedback = { ok: false, msg: msg }; renderPlay();
+      afterSpeech(msg, token, 2200, 500).then(function () { if (token.cancelled) return; S.input = ''; S.feedback = null; renderPlay(); });
+    }
+  }
+}
+
+function sharedCounting(token) {
+  var t = S.task;
+  S.shared = true; S.sharedIndex = -1;
+  S.feedback = { ok: false, msg: 'Schau, es ' + (t.answer === 1 ? 'ist ' : 'sind ') + t.answer + '. Komm, wir zählen zusammen!' };
+  renderPlay();
+  var seq = Promise.resolve().then(function () { return TTS.speak(S.feedback.msg, token); });
+  var loop = function (k) {
+    return function () {
+      if (token.cancelled) return Promise.reject('cancel');
+      S.sharedIndex = k; updateShared();
+      return TTS.speak(NUMWORDS[k + 1], token);
+    };
+  };
+  for (var k = 0; k < t.answer; k++) seq = seq.then(loop(k));
+  seq.then(function () {
+    if (token.cancelled) return Promise.reject('cancel');
+    S.sharedIndex = -1; updateShared();
+    S.input = String(t.answer); updateInput();
+    return TTS.speak(amount(t.answer, t.type === 'friends10' ? t.obj2 : t.obj, true) + '! Jetzt weißt du es.', token);
+  }).then(function () {
+    if (token.cancelled) return;
+    return new Promise(function (r) { S.timer = setTimeout(r, 1200); });
+  }).then(function () {
+    if (token.cancelled) return;
+    if (S.expired) { endSession(); return; }
+    newTask(S.taskType, stepDown(t.range) === t.range ? t.range : stepDown(t.range));
+  }).catch(function () {});
+}
+
+/* ================= Rendering ================= */
+function render() {
+  try {
+    switch (S.screen) {
+      case 'setup': renderSetup(); break;
+      case 'menu': renderMenu(); break;
+      case 'play': renderPlay(); break;
+      case 'reward': renderReward(); break;
+      case 'break': renderBreak(); break;
+      case 'sessionEnd': renderSessionEnd(); break;
+      case 'parents': renderParents(); break;
+      default: renderMenu();
+    }
+  } catch (e) { renderError(e); }
+}
+function renderError(e) {
+  APP.innerHTML = '<div class="screen center"><svg class="pony big"><use href="#i-ponyhead"/></svg><h2>Huch! Da ist etwas schiefgelaufen.</h2><p class="small">' + esc(e && e.message) + '</p><button class="btn btn-pink" id="reload">Neu starten</button></div>';
+  on('#reload', 'click', function () { location.reload(); });
+}
+
+/* ---------- Setup ---------- */
+function renderSetup() {
+  var ct = user.companionType;
+  APP.innerHTML =
+    '<div class="screen center">' +
+    '<h1>Willkommen auf dem Pony-Hof!</h1>' +
+    '<div class="field"><label>Wie heißt du?</label><input id="cname" maxlength="20" placeholder="Dein Name …" value="' + esc(user.childName) + '"></div>' +
+    '<div class="field"><label>Bist du ein Mädchen oder ein Junge?</label><div class="seg" style="margin-top:6px"><button data-g="f" class="' + (user.gender === 'f' ? 'sel' : '') + '">Mädchen</button><button data-g="m" class="' + (user.gender === 'm' ? 'sel' : '') + '">Junge</button></div></div>' +
+    '<p style="font-weight:700;color:var(--s600)">Wer soll dich begleiten?</p>' +
+    '<div class="choice">' +
+    '<button data-t="pony" class="' + (ct === 'pony' ? 'sel' : '') + '"><svg class="pony"><use href="#i-ponyhead"/></svg>Pony</button>' +
+    '<button data-t="unicorn" class="' + (ct === 'unicorn' ? 'sel' : '') + '"><svg class="pony"><use href="#i-unicornhead"/></svg>Einhorn</button>' +
+    '</div>' +
+    '<div class="field" id="pnamewrap" style="' + (ct ? '' : 'display:none') + '"><label>Wie heißt dein ' + esc(ct === 'unicorn' ? 'Einhorn' : 'Pony') + '?</label><input id="pname" maxlength="20" placeholder="Name …" value="' + esc(user.companionName) + '"></div>' +
+    '<button class="btn btn-pink" id="start" style="margin-top:8px">Los geht\'s! ' + icon('back', '') + '</button>' +
+    '</div>';
+  var startBtn = APP.querySelector('#start'); startBtn.querySelector('svg').style.transform = 'rotate(180deg)'; startBtn.querySelector('svg').style.width = '22px'; startBtn.querySelector('svg').style.height = '22px';
+  var check = function () {
+    user.childName = APP.querySelector('#cname').value.trim();
+    var pn = APP.querySelector('#pname'); user.companionName = pn ? pn.value.trim() : '';
+    startBtn.disabled = !(user.childName && user.gender && user.companionType && user.companionName);
+  };
+  on('#cname', 'input', check); on('#pname', 'input', check);
+  on('.seg button', 'click', function (ev) {
+    user.gender = ev.currentTarget.getAttribute('data-g');
+    var b = APP.querySelectorAll('.seg button'); for (var i = 0; i < b.length; i++) b[i].classList.toggle('sel', b[i] === ev.currentTarget);
+    check();
+  });
+  on('.choice button', 'click', function (ev) {
+    user.companionType = ev.currentTarget.getAttribute('data-t');
+    var b = APP.querySelectorAll('.choice button'); for (var i = 0; i < b.length; i++) b[i].classList.toggle('sel', b[i] === ev.currentTarget);
+    var w = APP.querySelector('#pnamewrap'); w.style.display = ''; w.querySelector('label').textContent = 'Wie heißt dein ' + (user.companionType === 'unicorn' ? 'Einhorn' : 'Pony') + '?';
+    check();
+  });
+  check();
+  startBtn.addEventListener('click', function () {
+    check(); if (startBtn.disabled) return;
+    TTS.unlock(); audioUnlock();
+    user.lastPlayed = new Date().toDateString(); saveUser();
+    S.editNames = false;
+    go('menu');
+    TTS.speak('Hallo ' + user.childName + '! Ich bin ' + user.companionName + '. Lass uns zusammen Zahlen entdecken!', S.token);
+  });
+}
+
+/* ---------- Menü ---------- */
+function renderMenu() {
+  var g = pick(GREETINGS());
+  var ex = user.sessionLocked
+    ? '<div class="locked"><h2 style="margin-top:0">Fertig für heute!</h2><p>Du hast super geübt. ' + esc(user.companionName) + ' ruht sich jetzt aus. Bis morgen!</p></div>'
+    : '<h3 style="color:var(--s600)">Was möchtest du üben?</h3><div class="exgrid">' +
+      '<button class="ex count" data-t="count"><span class="ico">' + icon('carrot') + '</span>Zählen</button>' +
+      '<button class="ex friends10" data-t="friends10"><span class="ico">' + icon('heart') + '</span>Zehnerfreunde</button>' +
+      '<button class="ex plus" data-t="plus"><span class="ico">+</span>Plus</button>' +
+      '<button class="ex minus" data-t="minus"><span class="ico">−</span>Minus</button></div>';
+  APP.innerHTML =
+    '<div class="screen" style="position:relative">' +
+    '<button class="iconbtn topright" id="parents" aria-label="Eltern-Bereich">' + icon('gear') + '</button>' +
+    '<div class="card row" style="margin-top:44px;margin-bottom:22px">' + petHTML('big') +
+    '<div><h2 style="margin:0">' + esc(g) + ', ' + esc(user.childName) + '!</h2><p style="margin:4px 0;color:var(--s600)">Dein ' + companionWord() + ' <b>' + esc(user.companionName) + '</b> wartet schon.</p>' +
+    '<span class="stars">' + icon('star') + ' ' + user.stars + ' Sterne</span></div></div>' +
+    ex +
+    '<button class="btn btn-amber" id="farm" style="margin-top:26px">' + icon('home', '') + ' Zur Koppel</button>' +
+    '</div>';
+  APP.querySelector('#farm svg').style.width = '22px'; APP.querySelector('#farm svg').style.height = '22px';
+  on('#parents', 'click', function () { go('parents'); });
+  on('#farm', 'click', function () { S.levelUp = false; go('reward'); });
+  on('.ex', 'click', function (ev) { startExercise(ev.currentTarget.getAttribute('data-t')); });
+  bindPet();
+}
+
+/* ---------- Aufgabe ---------- */
+function frameHTML(t) {
+  var slots = t.range <= 10 ? 10 : 20, html = '<div class="frame" id="frame">';
+  for (var r = 0; r < slots / 10; r++) {
+    html += '<div class="frow">';
+    for (var i = r * 10; i < r * 10 + 10; i++) {
+      var st = slotState(t, i), inner = '';
+      if (st === 'base') inner = icon(t.obj.id);
+      else if (st === 'add') inner = icon(t.obj2.id);
+      else if (st === 'sub') inner = icon(t.obj.id) + icon('cross', 'x');
+      html += '<div class="slot ' + st + '" data-i="' + i + '">' + inner + '<span class="cnum"></span></div>';
+    }
+    html += '</div>';
+  }
+  return html + '</div>';
+}
+function lineHTML(range) {
+  var html = '<div class="nline nl' + range + '" id="nline"><div class="rail"></div><div class="ticks">';
+  for (var i = 0; i <= range; i++) html += '<div class="tick ' + (i % 5 === 0 ? 'big' : '') + (i % 2 ? ' odd' : '') + '" data-n="' + i + '"><i></i><span class="lbl">' + i + '</span></div>';
+  return html + '</div></div>';
+}
+function renderPlay() {
+  var t = S.task; if (!t) { APP.innerHTML = ''; return; }
+  var fb = S.feedback, busy = !!fb;
+  var bubbleText = S.shared ? fb.msg : questionText(t, false);
+  var keys = '';
+  for (var k = 1; k <= 9; k++) keys += '<button class="key" data-k="' + k + '">' + k + '</button>';
+  keys += '<button class="key del" data-k="del">' + icon('cross') + '</button><button class="key" data-k="0">0</button><button class="key ok" data-k="ok" id="ok">' + icon('check') + '</button>';
+  APP.innerHTML =
+    '<div class="screen" style="position:relative">' +
+    (S.shared ? '' : '<button class="iconbtn topleft" id="home" aria-label="Zurück">' + icon('home') + '</button>') +
+    '<div class="banner" id="banner" style="display:' + (S.warned ? 'block' : 'none') + '">Bald gibt\'s eine Pause auf der Weide!</div>' +
+    '<div class="bubblewrap">' + ponyHTML() + '<div class="bubble"><p id="q">' + esc(bubbleText) + '</p>' + (S.shared ? '' : '<button class="iconbtn" id="say" aria-label="Nochmal vorlesen">' + icon('speaker') + '</button>') + '</div></div>' +
+    frameHTML(t) + (settings.showNumberLine ? lineHTML(t.range) : '') +
+    '<div class="answer" id="answer">' + (S.input || '?') + '</div>' +
+    (busy ? '' : '<div class="numpad">' + keys + '</div>') +
+    (fb && !S.shared ? '<div class="feedback ' + (fb.ok ? 'ok' : 'no') + '">' + (fb.ok ? icon('star', 'star') : ponyHTML(null, 'sm')) + '<span>' + esc(fb.msg) + '</span></div>' : '') +
+    '</div>';
+  on('#home', 'click', function () { go('menu'); });
+  on('#say', 'click', function () { TTS.speak(questionText(t, true), S.token); });
+  on('.key', 'click', function (ev) {
+    if (S.feedback) return;
+    var k = ev.currentTarget.getAttribute('data-k');
+    if (k === 'del') S.input = S.input.slice(0, -1);
+    else if (k === 'ok') { checkAnswer(); return; }
+    else if (S.input.length < 2) S.input += k;
+    updateInput();
+  });
+  updateInput(); updateShared();
+}
+function updateInput() {
+  var a = document.getElementById('answer'); if (a) a.textContent = S.input || '?';
+  var ok = document.getElementById('ok'); if (ok) ok.disabled = !S.input;
+  var n = S.input === '' ? -1 : parseInt(S.input, 10);
+  var ticks = APP.querySelectorAll('.tick'); for (var i = 0; i < ticks.length; i++) ticks[i].classList.toggle('active', parseInt(ticks[i].getAttribute('data-n'), 10) === n);
+}
+function updateShared() {
+  var t = S.task; if (!t) return;
+  var slots = APP.querySelectorAll('.slot'); var target = S.sharedIndex < 0 ? -1 : sharedSlot(t, S.sharedIndex);
+  for (var i = 0; i < slots.length; i++) {
+    var hit = parseInt(slots[i].getAttribute('data-i'), 10) === target;
+    slots[i].classList.toggle('hl', hit); if (hit) slots[i].querySelector('.cnum').textContent = S.sharedIndex + 1;
+  }
+  if (S.sharedIndex >= 0) {
+    var ticks = APP.querySelectorAll('.tick'); for (var j = 0; j < ticks.length; j++) ticks[j].classList.toggle('active', parseInt(ticks[j].getAttribute('data-n'), 10) === S.sharedIndex + 1);
+  }
+}
+
+/* ---------- Belohnung / Koppel ---------- */
+function itemForLevel(level) {
+  if (level <= 1) return null;
+  if (level <= 22) return ITEMS[level - 2];
+  var k = level - 23;
+  return ACC[k % ACC.length] + ' in ' + ACC_COLORS[Math.floor(k / ACC.length) % ACC_COLORS.length][0];
+}
+function accColor(level) { if (level < 23) return null; var k = level - 23; return ACC_COLORS[Math.floor(k / ACC.length) % ACC_COLORS.length][1]; }
+function ponySVG(x, y, sc, type, L, acc) {
+  var uni = type === 'unicorn', mane = uni ? '#f472b6' : '#78350f';
+  var s = '<g transform="translate(' + x + ' ' + y + ') scale(' + sc + ')">';
+  s += '<path d="M60 22 Q70 30 62 46" stroke="' + mane + '" stroke-width="6" stroke-linecap="round" fill="none"/>';
+  s += '<rect x="14" y="34" width="7" height="22" rx="3" fill="#b45309"/><rect x="26" y="36" width="7" height="22" rx="3" fill="#b45309"/><rect x="42" y="36" width="7" height="22" rx="3" fill="#b45309"/><rect x="52" y="34" width="7" height="22" rx="3" fill="#b45309"/>';
+  s += '<ellipse cx="36" cy="32" rx="26" ry="15" fill="#d97706"/>';
+  if (L >= 15) s += '<path d="M22 22 Q36 17 50 22 L50 36 Q36 41 22 36Z" fill="' + (acc && acc.n === 'Decke' ? acc.c : '#ec4899') + '"/>';
+  if (L >= 13) s += '<ellipse cx="34" cy="19" rx="9" ry="5" fill="' + (acc && acc.n === 'Sattel' ? acc.c : '#92400e') + '"/>';
+  s += '<path d="M16 26 Q12 14 12 6" stroke="#d97706" stroke-width="14" stroke-linecap="round" fill="none"/>';
+  s += '<path d="M4 -4 L0 -18 L10 -8Z" fill="#d97706"/><path d="M16 -4 L20 -18 L10 -8Z" fill="#d97706"/>';
+  if (uni) s += '<path d="M10 -6 L8 -26 L14 -6Z" fill="#fbbf24"/>';
+  s += '<circle cx="10" cy="4" r="12" fill="#d97706"/>';
+  s += '<path d="M2 -4 Q12 -12 22 0 Q16 -2 18 8 Q12 2 8 10 Q4 2 2 -4Z" fill="' + mane + '"/>';
+  if (L >= 22) s += '<circle cx="9" cy="-4" r="1.3" fill="#fff"/><circle cx="15" cy="0" r="1.3" fill="#fff"/><circle cx="12" cy="5" r="1.3" fill="#fff"/>';
+  s += '<ellipse cx="2" cy="8" rx="7" ry="5" fill="#fde68a"/><circle cx="4" cy="2" r="2" fill="#1e293b"/><circle cx="4.6" cy="1.4" r=".6" fill="#fff"/>';
+  if (L >= 14) s += '<path d="M-5 7 Q4 14 12 8" stroke="' + (acc && acc.n === 'Halfter' ? acc.c : '#7c3aed') + '" stroke-width="1.8" fill="none"/>';
+  if (L >= 18) s += '<circle cx="16" cy="20" r="4" fill="#ef4444"/><circle cx="16" cy="20" r="2" fill="#fbbf24"/>';
+  if (acc && acc.n === 'Schleife') s += '<path d="M12 -12 L5 -18 L8 -10 L5 -4Z M12 -12 L19 -18 L16 -10 L19 -4Z" fill="' + acc.c + '"/>';
+  if (acc && acc.n === 'Blumenkranz') s += '<circle cx="3" cy="-6" r="2.4" fill="' + acc.c + '"/><circle cx="10" cy="-10" r="2.4" fill="' + acc.c + '"/><circle cx="17" cy="-6" r="2.4" fill="' + acc.c + '"/>';
+  if (acc && acc.n === 'Hufeisen') s += '<path d="M54 60 a4 4 0 1 0 8 0" stroke="' + acc.c + '" stroke-width="2.5" fill="none"/>';
+  return s + '</g>';
+}
+function farmSVG(L) {
+  var night = L >= 21, acc = null;
+  var it = itemForLevel(user.farmLevel);
+  if (user.farmLevel >= 23 && it) acc = { n: it.split(' in ')[0], c: accColor(user.farmLevel) };
+  var s = '<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">';
+  s += '<rect width="400" height="240" fill="' + (night ? '#1e1b4b' : '#bfdbfe') + '"/>';
+  if (night) { for (var i = 0; i < 18; i++) s += '<circle cx="' + ((i * 61) % 390 + 5) + '" cy="' + ((i * 37) % 90 + 8) + '" r="' + (1 + (i % 3) * 0.5) + '" fill="#fff"/>'; s += '<circle cx="340" cy="40" r="16" fill="#fde68a"/>'; }
+  else s += '<circle cx="345" cy="40" r="18" fill="#fde047"/>';
+  if (L >= 11) s += '<path d="M40 150 A140 140 0 0 1 320 150" stroke="#ef4444" stroke-width="7" fill="none" opacity=".7"/><path d="M48 150 A132 132 0 0 1 312 150" stroke="#f59e0b" stroke-width="7" fill="none" opacity=".7"/><path d="M56 150 A124 124 0 0 1 304 150" stroke="#22c55e" stroke-width="7" fill="none" opacity=".7"/><path d="M64 150 A116 116 0 0 1 296 150" stroke="#3b82f6" stroke-width="7" fill="none" opacity=".7"/>';
+  s += '<ellipse cx="200" cy="230" rx="260" ry="90" fill="#86efac"/><rect x="0" y="180" width="400" height="60" fill="#4ade80"/>';
+  if (L >= 5) s += '<rect x="290" y="96" width="90" height="70" fill="#dc2626"/><path d="M280 100 L335 60 L390 100Z" fill="#991b1b"/><rect x="322" y="126" width="26" height="40" fill="#451a03"/><rect x="300" y="108" width="14" height="14" fill="#fde68a"/>';
+  if (L >= 6) { var nm = user.companionName || '', fs = Math.min(11, Math.floor(100 / Math.max(4, nm.length))); s += '<rect x="318" y="103" width="62" height="17" rx="3" fill="#92400e" stroke="#451a03" stroke-width="1.5"/><circle cx="322" cy="111.5" r="1.2" fill="#fde68a"/><circle cx="376" cy="111.5" r="1.2" fill="#fde68a"/><text x="349" y="115.5" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="700" font-size="' + fs + '" fill="#fde68a">' + esc(nm) + '</text>'; }
+  if (L >= 8) s += '<rect x="42" y="100" width="12" height="70" fill="#92400e"/><circle cx="48" cy="92" r="34" fill="#15803d"/><circle cx="36" cy="84" r="4" fill="#ef4444"/><circle cx="60" cy="96" r="4" fill="#ef4444"/><circle cx="50" cy="72" r="4" fill="#ef4444"/>';
+  if (L >= 10) s += '<rect x="54" y="104" width="26" height="4" rx="2" fill="#78350f"/><line x1="60" y1="106" x2="60" y2="150" stroke="#a16207" stroke-width="2"/><line x1="76" y1="106" x2="76" y2="150" stroke="#a16207" stroke-width="2"/><rect x="54" y="150" width="28" height="5" rx="1.5" fill="#b45309"/>';
+  if (L >= 19) s += '<rect x="236" y="96" width="5" height="74" fill="#94a3b8"/><path d="M238 96 L238 76 M238 96 L258 96 M238 96 L238 116 M238 96 L218 96" stroke="#e2e8f0" stroke-width="6" stroke-linecap="round"/><circle cx="238" cy="96" r="4" fill="#64748b"/>';
+  if (L >= 9) s += '<ellipse cx="320" cy="200" rx="52" ry="16" fill="#60a5fa" stroke="#93c5fd" stroke-width="3"/>';
+  if (L >= 20) s += '<path d="M265 196 Q320 160 375 196" stroke="#92400e" stroke-width="8" fill="none"/><path d="M265 196 Q320 160 375 196" stroke="#f59e0b" stroke-width="3" fill="none"/>';
+  if (L >= 2) { for (var f = 0; f < 9; f++) s += '<rect x="' + (10 + f * 46) + '" y="160" width="8" height="30" rx="2" fill="#92400e"/>'; s += '<rect x="8" y="166" width="380" height="5" fill="#b45309"/><rect x="8" y="180" width="380" height="5" fill="#b45309"/>'; }
+  if (L >= 4) s += '<rect x="110" y="196" width="40" height="16" rx="4" fill="#78350f"/><rect x="114" y="198" width="32" height="6" fill="#fbbf24"/>';
+  if (L >= 12) s += '<circle cx="236" cy="214" r="13" fill="#facc15" stroke="#ca8a04" stroke-width="3"/><circle cx="260" cy="216" r="11" fill="#facc15" stroke="#ca8a04" stroke-width="3"/>';
+  if (L >= 3) { var cols = ['#f472b6', '#a855f7', '#f97316', '#f472b6', '#facc15']; for (var q = 0; q < 5; q++) s += '<line x1="' + (30 + q * 18) + '" y1="222" x2="' + (30 + q * 18) + '" y2="232" stroke="#15803d" stroke-width="2"/><circle cx="' + (30 + q * 18) + '" cy="220" r="5" fill="' + cols[q] + '"/><circle cx="' + (30 + q * 18) + '" cy="220" r="2" fill="#fde68a"/>'; }
+  if (L >= 16) s += '<g fill="#f472b6"><ellipse cx="120" cy="120" rx="5" ry="3" transform="rotate(-20 120 120)"/><ellipse cx="128" cy="120" rx="5" ry="3" transform="rotate(20 128 120)"/></g><g fill="#60a5fa"><ellipse cx="220" cy="140" rx="5" ry="3" transform="rotate(-20 220 140)"/><ellipse cx="228" cy="140" rx="5" ry="3" transform="rotate(20 228 140)"/></g>';
+  s += ponySVG(140, 160, 1.05, user.companionType, L, acc);
+  if (L >= 7) s += ponySVG(60, 172, 0.75, user.companionType === 'pony' ? 'unicorn' : 'pony', 1, null);
+  if (L >= 17) s += ponySVG(300, 190, 0.6, 'pony', 1, null);
+  return s + '</svg>';
+}
+function renderReward() {
+  var L = user.farmLevel, it = itemForLevel(L);
+  var earned = Math.max(0, L - 1);
+  APP.innerHTML =
+    '<div class="screen" style="background:#f0fdf4">' +
+    '<h2 style="color:var(--green-900);margin-top:36px">Deine Koppel</h2>' +
+    '<p style="color:var(--green-d);font-weight:800;margin:0 0 14px">Level ' + L + ' • ' + user.stars + ' Sterne</p>' +
+    '<div class="farm breathe">' + farmSVG(L) + '</div>' +
+    '<div class="newbox up">' + (S.levelUp
+      ? '<p style="margin:0 0 4px;font-weight:800">Neu freigeschaltet:</p><div class="item">' + esc(it) + '</div>'
+      : (it ? '<p style="margin:0 0 4px;font-weight:800">Du hast schon ' + earned + ' ' + (earned === 1 ? 'Sache' : 'Sachen') + ' verdient!</p><p class="small" style="margin:0">Zuletzt: ' + esc(it) + '. Alle 3 Sterne gibt es etwas Neues.</p>'
+              : '<p style="margin:0;font-weight:800">Sammle 3 Sterne, dann bekommt ' + esc(user.companionName) + ' etwas Neues!</p>')) +
+    '</div>' +
+    '<div class="row" style="margin-top:22px;gap:12px">' +
+    '<button class="btn btn-soft" id="menu">Zum Menü</button>' +
+    (user.sessionLocked ? '' : '<button class="btn btn-green" id="cont">Weiter üben</button>') +
+    '</div></div>';
+  on('#menu', 'click', function () { go('menu'); });
+  on('#cont', 'click', function () {
+    if (!S.sessionStart) { S.sessionStart = Date.now(); S.tasksInSession = 0; S.sessionCorrect = 0; S.sessionWrong = 0; S.warned = false; S.expired = false; }
+    go('play'); newTask(S.taskType);
+  });
+  if (S.levelUp) TTS.speak('Klasse! Für deine Sterne gibt es etwas Neues: ' + it + '!', S.token);
+  else TTS.speak('Das ist deine Koppel. Schau, was du dir schon alles verdient hast!', S.token);
+  S.levelUp = false;
+}
+
+/* ---------- Pause / Ende ---------- */
+function renderBreak() {
+  APP.innerHTML = '<div class="screen center" style="background:var(--blue-50)"><h1>Kurze Pause!</h1>' + petHTML('big') +
+    '<p class="pethint">Tipp auf ' + esc(user.companionName) + ' zum Streicheln</p>' +
+    '<p style="font-size:1.2rem;font-weight:800;color:var(--blue-900);max-width:340px">Streichle ' + esc(user.companionName) + ' einmal über die Nase, schüttle deine Arme aus und atme tief durch.</p>' +
+    '<button class="btn btn-blue" id="cont" style="margin-top:18px">Weiter geht\'s</button><button class="btn btn-soft btn-sm" id="menu" style="margin-top:14px">Zum Menü</button></div>';
+  on('#cont', 'click', function () { go('play'); newTask(S.taskType); });
+  on('#menu', 'click', function () { go('menu'); });
+  bindPet();
+  TTS.speak('Kurze Pause! Streichle ' + user.companionName + ' über die Nase, schüttle deine Arme aus und atme tief durch.', S.token);
+}
+function renderSessionEnd() {
+  APP.innerHTML = '<div class="screen center" style="background:var(--blue-50)"><h1>Tolle Übungszeit!</h1>' + petHTML('big') +
+    '<p style="font-size:1.2rem;font-weight:800;color:var(--blue-900);max-width:360px">Du hast heute super geübt, ' + esc(user.childName) + '!<br>' + esc(user.companionName) + ' ruht sich jetzt auf der Weide aus.</p>' +
+    '<span class="stars">' + icon('star') + ' ' + user.stars + ' Sterne gesammelt</span>' +
+    '<button class="btn btn-blue" id="menu" style="margin-top:26px">Tschüss, bis morgen!</button></div>';
+  on('#menu', 'click', function () { go('menu'); });
+  bindPet();
+}
+
+/* ---------- Eltern-Bereich ---------- */
+function weekStart(d) { d = new Date(d.getFullYear(), d.getMonth(), d.getDate()); var day = (d.getDay() + 6) % 7; d.setDate(d.getDate() - day); return d; }
+function fmtDM(d) { return d.getDate() + '.' + (d.getMonth() + 1) + '.'; }
+function analysis() {
+  var today = new Date(), weeks = [], days = [];
+  var ws = weekStart(today);
+  for (var w = 7; w >= 0; w--) {
+    var st = new Date(ws); st.setDate(st.getDate() - 7 * w); var c = 0, wr = 0;
+    for (var i = 0; i < 7; i++) { var d = new Date(st); d.setDate(d.getDate() + i); var e = stats.daily[dayKey(d)]; if (e) { c += e.c; wr += e.w; } }
+    weeks.push({ label: fmtDM(st), total: c + wr, rate: (c + wr) ? Math.round(100 * wr / (c + wr)) : null });
+  }
+  for (var k = 13; k >= 0; k--) { var dd = new Date(today); dd.setDate(dd.getDate() - k); var en = stats.daily[dayKey(dd)]; days.push({ label: fmtDM(dd), min: en ? Math.round(en.s / 60) : 0 }); }
+  var counts = {}; stats.errors.forEach(function (e) { counts[e.task] = (counts[e.task] || 0) + 1; });
+  var top = Object.keys(counts).map(function (k) { return [k, counts[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 10);
+  return { weeks: weeks, days: days, top: top };
+}
+function renderParents() {
+  if (!S.parentsUnlocked) {
+    APP.innerHTML = '<div class="screen center" style="background:var(--s100);position:relative"><button class="iconbtn topleft" id="back">' + icon('back') + '</button>' +
+      '<div class="pinscreen">' + icon('lock', '') + '<h2>Eltern-Bereich</h2><p class="small">Bitte PIN eingeben</p><input id="pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"><p class="errmsg" id="pinerr" style="display:none;margin:0 0 8px">Falsche PIN</p><button class="btn btn-pink" id="unlock" style="width:100%">Entsperren</button></div></div>';
+    var lockSvg = APP.querySelector('.pinscreen > svg'); lockSvg.style.width = '44px'; lockSvg.style.height = '44px'; lockSvg.style.color = 'var(--s400)';
+    on('#back', 'click', function () { go('menu'); });
+    var tryUnlock = function () {
+      var v = APP.querySelector('#pin').value;
+      if (v === settings.pin) { S.parentsUnlocked = true; renderParents(); }
+      else { APP.querySelector('#pin').classList.add('err'); APP.querySelector('#pinerr').style.display = 'block'; APP.querySelector('#pin').value = ''; }
+    };
+    on('#unlock', 'click', tryUnlock);
+    on('#pin', 'keydown', function (ev) { if (ev.key === 'Enter') tryUnlock(); });
+    on('#pin', 'input', function () { if (APP.querySelector('#pin').value.length === 4) tryUnlock(); });
+    setTimeout(function () { var p = APP.querySelector('#pin'); if (p) p.focus(); }, 50);
+    return;
+  }
+  var A = analysis();
+  var rates = Object.keys(stats.successRates).sort().map(function (key) {
+    var p = key.split('_'), d = stats.successRates[key], r = d.total ? Math.round(100 * d.correct / d.total) : 0;
+    return '<div class="statrow"><span>' + esc(TYPE_LABEL[p[0]] || p[0]) + ' (bis ' + esc(p[1]) + ')</span><span style="font-weight:800">' + r + '% <b style="font-weight:600;color:var(--s400)">(' + d.correct + '/' + d.total + ')</b></span></div><div class="bar"><i style="width:' + r + '%"></i></div>';
+  }).join('') || '<p class="small">Noch keine Daten.</p>';
+  var ct = stats.crossTen, ctr = ct.total ? Math.round(100 * ct.correct / ct.total) : null;
+  var weeks = A.weeks.map(function (w) { return '<div class="col">' + (w.rate !== null ? '<em>' + w.rate + '%</em>' : '') + '<i style="height:' + (w.rate === null ? 0 : Math.max(2, w.rate)) + '%;' + (w.rate === null ? 'background:var(--s200)' : '') + '"></i><span>' + w.label + '</span></div>'; }).join('');
+  var maxMin = Math.max(1, Math.max.apply(null, A.days.map(function (d) { return d.min; })));
+  var days = A.days.map(function (d) { return '<div class="col">' + (d.min ? '<em>' + d.min + '</em>' : '') + '<i style="height:' + Math.round(100 * d.min / maxMin) + '%;background:var(--green)"></i><span>' + d.label + '</span></div>'; }).join('');
+  var top = A.top.length ? '<div class="chips">' + A.top.map(function (t) { return '<span class="chip">' + esc(t[0]) + ' <b>(' + t[1] + '×)</b></span>'; }).join('') + '</div>' : '<p class="small">Keine Fehlerdaten.</p>';
+  var errs = stats.errors.slice(0, 20).map(function (e) {
+    return '<div><div><b>' + esc(e.task) + '</b> → <span style="text-decoration:line-through;color:var(--s400)">' + esc(e.given) + '</span><div class="meta">' + esc(TYPE_LABEL[e.type] || e.type) + ' · Raum bis ' + esc(e.range) + (e.crossesTen ? ' · Zehnerübergang' : '') + '</div></div><span class="meta">' + new Date(e.date).toLocaleDateString('de-DE') + '</span></div>';
+  }).join('') || '<p class="small">Bisher keine Fehler.</p>';
+  var totalMin = Math.round((stats.playtimeTotal || 0) / 60);
+
+  APP.innerHTML =
+    '<div class="screen" style="background:var(--s50)"><div class="pwrap">' +
+    '<div class="row" style="justify-content:space-between;margin-bottom:14px"><h2 style="margin:0">Eltern-Übersicht</h2><button class="btn btn-soft btn-sm" id="close">Schließen</button></div>' +
+    '<div class="pgrid">' +
+    '<div class="pcard"><h3 style="margin:0">Einstellungen</h3>' +
+    '<div><label>Lernzeit pro Session: <span id="limlbl">' + settings.sessionLimitMinutes + '</span> Min.</label><input type="range" id="limit" min="3" max="30" step="1" value="' + settings.sessionLimitMinutes + '"><p class="small">Zwei Minuten vor Ablauf gibt es eine sanfte Vorwarnung. Die Session endet erst nach der laufenden Aufgabe.</p></div>' +
+    '<div><label>Maximaler Zahlenraum (deckelt die Automatik)</label><div class="seg"><button data-m="10" class="' + (settings.maxNumber === 10 ? 'sel' : '') + '">Bis 10</button><button data-m="20" class="' + (settings.maxNumber === 20 ? 'sel' : '') + '">Bis 20</button></div><p class="small">Aktuelle automatische Stufe: bis ' + user.adaptiveMax + '. Nach 5 richtigen in Folge geht es eine Stufe hoch, nach 3 Fehlern in Folge eine Stufe runter (5 → 10 → 20).</p></div>' +
+    '<div class="sub"><div class="toggle"><span>Sprachausgabe (Vorlesen)</span><input type="checkbox" id="tts" ' + (settings.ttsEnabled ? 'checked' : '') + '></div>' +
+    '<div id="ttsopts" style="' + (settings.ttsEnabled ? '' : 'display:none') + '"><label>Sprechtempo: <span id="ratelbl">' + settings.ttsRate + '</span></label><input type="range" id="rate" min="0.7" max="1.1" step="0.05" value="' + settings.ttsRate + '"><button class="pbtn grey" id="test" style="margin-top:8px">Stimme testen</button><p class="small" style="margin-top:8px">Für Sprachausgabe ohne Internet muss das deutsche Sprachpaket auf dem Gerät installiert sein (Android: Einstellungen → System → Sprachen → Text-in-Sprache).</p></div>' +
+    '<div class="toggle" style="border-top:1px solid var(--s200);padding-top:10px"><span>Erfolgs-Soundeffekt</span><input type="checkbox" id="sfx" ' + (settings.sfxEnabled ? 'checked' : '') + '></div>' +
+    '<div class="toggle" style="border-top:1px solid var(--s200);padding-top:10px"><span>Fokus-Modus</span><input type="checkbox" id="focus" ' + (settings.focusMode ? 'checked' : '') + '></div><p class="small" style="margin:0">Öffnet die Übung im Vollbild und zeigt beim Zurückkommen einen Begrüßungs-Bildschirm, wenn die App zwischendurch verlassen wurde. <b>Wichtig:</b> Der Home-Button lässt sich technisch nicht sperren – dafür bitte das Anheften des Bildschirms nutzen (Anleitung unten).</p>' +
+    '<div class="toggle" style="border-top:1px solid var(--s200);padding-top:10px"><span>Zahlenstrahl anzeigen</span><input type="checkbox" id="nline" ' + (settings.showNumberLine ? 'checked' : '') + '></div><p class="small" style="margin:0">Der Zahlenstrahl hilft beim Verknüpfen von Menge und Zahl. Ausblenden, wenn er als zu viel Reiz empfunden wird.</p></div>' +
+    '<div class="sub"><b style="font-size:.9rem;color:var(--s600)">Bildschirm anheften (Android)</b><p class="small" style="margin:0">So kann die App nicht mehr verlassen werden, ohne dass jemand Zurück + Übersicht gedrückt hält:<br>1. Einstellungen → Sicherheit → <i>Bildschirm anheften</i> (oder „App-Pinning") einschalten.<br>2. Zusätzlich <i>Vor dem Loslassen PIN abfragen</i> aktivieren.<br>3. Pony-Hof öffnen, Übersichtstaste antippen, auf das App-Symbol tippen und <i>Anheften</i> wählen.<br>4. Zum Beenden Zurück + Übersicht gleichzeitig gedrückt halten und PIN eingeben.<br>Die genaue Bezeichnung unterscheidet sich je nach Hersteller. Bei Samsung heißt es meist Einstellungen → Sicherheit und Datenschutz → Weitere Sicherheitseinstellungen → App anheften.</p></div>' +
+    '<div class="sub"><div id="pinrow"><button class="pbtn grey" id="chpin">PIN ändern</button></div>' +
+    '<button class="pbtn blue" id="unlockday">Heute weiter üben freischalten' + (user.sessionLocked ? ' (aktuell gesperrt)' : '') + '</button>' +
+    '<button class="pbtn purple" id="names">Namen / Begleiter ändern</button>' +
+    '<div id="resetrow"><button class="pbtn red" id="reset">Fortschritt & Statistik zurücksetzen</button></div></div>' +
+    '</div>' +
+    '<div class="pcard"><h3 style="margin:0">Fehler-Analyse</h3><div class="scrollbox">' +
+    '<p class="small">Gesamte Übungszeit: ' + totalMin + ' Min. · Sessions: ' + stats.sessions.length + ' · Sterne: ' + user.stars + '</p>' +
+    '<p class="small">App während einer Übung verlassen: <b>' + (stats.leaves || 0) + '×</b>' + (stats.leaveLog.length ? ' · zuletzt am ' + new Date(stats.leaveLog[0]).toLocaleString('de-DE') : '') + '</p>' +
+    '<h3>Erfolgsquote pro Bereich</h3>' + rates +
+    '<h3>Zehnerübergang</h3>' + (ctr === null ? '<p class="small">Noch keine Aufgaben mit Zehnerübergang (kommen erst im Zahlenraum bis 20).</p>' : '<div class="statrow"><span>Aufgaben wie 7 + 5 oder 13 − 6</span><span style="font-weight:800">' + ctr + '% <b style="font-weight:600;color:var(--s400)">(' + ct.correct + '/' + ct.total + ')</b></span></div><div class="bar"><i style="width:' + ctr + '%"></i></div>') +
+    '<h3>Fehlerquote pro Woche (letzte 8 Wochen)</h3><div class="cols">' + weeks + '</div><p class="small" style="margin-top:22px">Grau = keine Übung in dieser Woche.</p>' +
+    '<h3>Übungszeit pro Tag in Minuten (letzte 14 Tage)</h3><div class="cols">' + days + '</div><div style="height:20px"></div>' +
+    '<h3>Häufigste Fehleraufgaben</h3>' + top +
+    '<h3>Letzte Fehler im Detail</h3><div class="errlist">' + errs + '</div>' +
+    '</div></div></div></div></div>';
+
+  on('#close', 'click', function () { go('menu'); });
+  on('#limit', 'input', function (ev) { settings.sessionLimitMinutes = parseInt(ev.target.value, 10); APP.querySelector('#limlbl').textContent = settings.sessionLimitMinutes; saveSettings(); });
+  on('.seg button', 'click', function (ev) {
+    settings.maxNumber = parseInt(ev.currentTarget.getAttribute('data-m'), 10); if (user.adaptiveMax > settings.maxNumber) user.adaptiveMax = settings.maxNumber;
+    saveSettings(); saveUser(); renderParents();
+  });
+  on('#tts', 'change', function (ev) { settings.ttsEnabled = ev.target.checked; saveSettings(); APP.querySelector('#ttsopts').style.display = settings.ttsEnabled ? '' : 'none'; });
+  on('#rate', 'input', function (ev) { settings.ttsRate = parseFloat(ev.target.value); APP.querySelector('#ratelbl').textContent = settings.ttsRate; saveSettings(); });
+  on('#test', 'click', function () { TTS.speak('Hallo ' + user.childName + '! So klinge ich. 7 und 3 sind zusammen 10.', S.token); });
+  on('#sfx', 'change', function (ev) { settings.sfxEnabled = ev.target.checked; saveSettings(); if (settings.sfxEnabled) successSound(); });
+  on('#nline', 'change', function (ev) { settings.showNumberLine = ev.target.checked; saveSettings(); });
+  on('#focus', 'change', function (ev) { settings.focusMode = ev.target.checked; saveSettings(); if (!settings.focusMode && document.fullscreenElement && document.exitFullscreen) { try { document.exitFullscreen(); } catch (e) {} } });
+  on('#chpin', 'click', function () {
+    APP.querySelector('#pinrow').innerHTML = '<div class="pinbox"><input id="newpin" type="password" inputmode="numeric" maxlength="4" placeholder="Neue PIN"><button class="pbtn green" style="width:auto" id="savepin">OK</button><button class="pbtn grey" style="width:auto" id="cancelpin">Abbruch</button></div>';
+    on('#savepin', 'click', function () { var v = APP.querySelector('#newpin').value; if (/^\d{4}$/.test(v)) { settings.pin = v; saveSettings(); renderParents(); } });
+    on('#cancelpin', 'click', renderParents);
+  });
+  on('#unlockday', 'click', function () { user.sessionLocked = false; saveUser(); renderParents(); });
+  on('#names', 'click', function () { S.editNames = true; go('setup'); });
+  on('#reset', 'click', function () {
+    APP.querySelector('#resetrow').innerHTML = '<div style="background:#fee2e2;padding:12px;border-radius:14px;text-align:center"><p style="margin:0 0 8px;font-weight:800;color:#991b1b">Wirklich alle Sterne und Statistiken löschen?</p><div class="row" style="justify-content:center;gap:8px"><button class="pbtn red" style="width:auto" id="doreset">Ja, löschen</button><button class="pbtn grey" style="width:auto" id="noreset">Abbrechen</button></div></div>';
+    on('#doreset', 'click', function () {
+      user.stars = 0; user.farmLevel = 1; user.streak = 0; user.adaptiveMax = 10; user.sessionLocked = false; saveUser();
+      stats = JSON.parse(JSON.stringify(DEF_STATS)); saveStats();
+      S.sessionStart = null; renderParents();
+    });
+    on('#noreset', 'click', renderParents);
+  });
+}
+
+/* ================= Start ================= */
+function init() {
+  var today = new Date().toDateString();
+  if (user.lastPlayed !== today) { user.sessionLocked = false; user.lastPlayed = today; saveUser(); }
+  var ready = user.childName && user.gender && user.companionType && user.companionName;
+  try { history.replaceState({ screen: 'root' }, ''); } catch (e) {}
+  go(ready ? 'menu' : 'setup', { noPush: true });
+}
+try { init(); } catch (e) { renderError(e); }
+
+/* Service Worker */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('./service-worker.js').catch(function () {}); });
+}
+})();
+</script>
+</body>
+</html>
